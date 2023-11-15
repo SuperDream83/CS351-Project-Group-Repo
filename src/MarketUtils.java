@@ -1,0 +1,110 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+public class MarketUtils {
+
+    public static Marketplace marketplace;
+    private static Scanner scanner = new Scanner(System.in);
+
+    public MarketUtils(Marketplace marketplace) {
+        MarketUtils.marketplace = marketplace;
+
+    }
+
+    public static void marketplaceMenu(PrintWriter printWriter, BufferedReader in, Account userAccount) {
+        boolean continueMarketplace = true;
+
+        while (continueMarketplace) {
+            System.out.println("--------- MARKETPLACE MENU ---------");
+            System.out.println("1. View listings");
+            System.out.println("2. Buy items");
+            System.out.println("3. Sell items");
+            System.out.println("4. Main Menu");
+            System.out.print("Please enter your choice (1-4): ");
+
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1":
+                    printWriter.println("VIEW_MARKETPLACE");
+                    try {
+                        String output = in.readLine();
+                        String[] splitOut = output.split("-");
+                        for (String line : splitOut) {
+                            System.out.println(line);
+                        }
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+
+                break;
+                case "2":
+                    buyItems(userAccount, printWriter, in);
+                    break;
+                case "3":
+                    sellItems(userAccount, printWriter, in);
+                    break;
+                case "4":
+                    continueMarketplace = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please select a number between 1 and 4.");
+                    break;
+            }
+        }
+    }
+
+    public static void buyItems(Account userAccount, PrintWriter printWriter, BufferedReader in) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the name of the item you want to buy: ");
+        String itemName = scanner.nextLine();
+
+        System.out.print("Enter the quantity you want to buy: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine(); // Consume newline left-over
+
+        printWriter.println("BUY_ITEM" + "|" + itemName + "|" + quantity);
+
+        try {
+            String output = in.readLine();
+            System.out.println(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void sellItems(Account userAccount, PrintWriter printWriter, BufferedReader in) {
+        Scanner scanner = new Scanner(System.in);
+        // Display the user's inventory
+        printWriter.println("VIEW_USER_ACCOUNT");
+        try {
+            String output = in.readLine();
+            String[] splitOut = output.split("-");
+            for (String line : splitOut) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.print("Enter the name of the item you want to sell: ");
+        String itemName = scanner.nextLine();
+
+
+        System.out.print("Enter the quantity you want to sell: ");
+        int quantityToSell = scanner.nextInt();
+        scanner.nextLine(); // Consume newline left-over
+
+        printWriter.println("SELL_ITEM" + "|" + itemName + "|" + quantityToSell);
+
+        try {
+            String output = in.readLine();
+            System.out.println(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
