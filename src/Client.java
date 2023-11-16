@@ -21,8 +21,6 @@ public class Client {
         socket.close();
         System.exit(0);
 
-
-
     }
 
     public static void main(String[] args) throws IOException {

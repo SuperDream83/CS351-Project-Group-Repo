@@ -250,7 +250,7 @@ public class SocketHandler implements Runnable {
                     synchronized (this) {
                         for (Account account : onlineUsers){
                             if (account.getUserName().equals(data[1])){
-                                // Kierans update account balance method goes here
+                                CsvUtils.updateUserBalance(userAccount);
                             }
                         }
                         onlineUsers.removeIf(account -> account.getUserName().equals(data[1]));

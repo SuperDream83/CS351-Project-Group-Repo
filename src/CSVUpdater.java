@@ -16,7 +16,7 @@ public class CSVUpdater {
     }
 
     public static void editRecord(String filePath, String editTerm, String newID, String newName, String newAge){
-        String tempFile = "temp.txt";
+        String tempFile = "temp.csv";
         File oldFile = new File(filePath);
         File newFile = new File("C:\\Users\\Aidan\\Documents\\Uni Work\\Year 3\\CS351\\Group Project\\OnlineSystem\\Resources\\" + tempFile);
         String ID = "";
