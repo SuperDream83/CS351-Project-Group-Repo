@@ -3,8 +3,31 @@ import java.util.List;
 
 public class CsvUtils {
 
-    static String accountsFilename = "C:\\Users\\Aidan\\Documents\\Uni Work\\Year 3\\CS351\\Group Project\\OnlineSystem\\Resources\\accounts.csv"; // Adjust the path if necessary
-    static String marketFilename = "C:\\Users\\Aidan\\Documents\\Uni Work\\Year 3\\CS351\\Group Project\\OnlineSystem\\Resources\\market.csv"; // Adjust the path if necessary
+    static String accountsFilename = "Resources/accounts.csv"; // Adjust the path if necessary
+    static String marketFilename = "Resources/market.csv"; // Adjust the path if necessary
+
+    public static Account getAccount(String username) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilename))) {
+            String line;
+            reader.readLine(); // Skip header line
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    if (parts[0].equals(username)) {
+                        Account account = new Account(parts[0],parts[1],Integer.parseInt(parts[2]));
+                        return account;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.out.println("Error parsing balance");
+            e.printStackTrace();
+        }
+
+        return null; // Account not found or error occurred
+    }
 
     public static Account getAccount(String username, String password) {
 
