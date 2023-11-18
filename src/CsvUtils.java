@@ -4,11 +4,13 @@ import java.util.Scanner;
 
 public class CsvUtils {
 
+
     private static String tempAccountsFilePath = "Resources\\tempAccounts.csv";
     static String accountsFilename = "Resources\\accounts.csv"; // Adjust the path if necessary
     static String marketFilename = "Resources\\market.csv"; // Adjust the path if necessary
+  
 
-    public static Account getAccount(String username, String password) {
+      public static Account getAccount(String username, String password) {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilename))) {
             String line;

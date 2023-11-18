@@ -18,7 +18,6 @@ public class Server implements Runnable {
     public void run() {
         // Want a command that can shutdown the server
         try {
-            System.out.println("Server Running");
             while (true) {
                 Socket client = serverSocket.accept();
                 System.out.println("Client connected");
@@ -37,10 +36,13 @@ public class Server implements Runnable {
             Server server = new Server();
             Thread thread = new Thread(server);
             thread.start();
-        } catch (IOException e){
+
+            System.out.println("Server Running");
+
+            Admin.run();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 }
-
