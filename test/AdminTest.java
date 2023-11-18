@@ -38,11 +38,13 @@ public class AdminTest {
 
     @Test
     public void testAddMoney() {
-        setIn("1\n");
+        setIn("1");
 
         Admin.run();
 
         String out = outContent.toString();
+
+        System.err.println(out);
 
         assertTrue(out.contains("ADMIN MENU"));
         assertTrue(out.contains("option 1"));

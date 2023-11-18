@@ -1,5 +1,3 @@
-import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Admin {
@@ -22,18 +20,20 @@ public class Admin {
                 System.out.println();
                 System.out.print("Please enter your choice (1-5): ");
 
-                try {
-                    option = scanner.nextInt();
-
-                    scanner.nextLine();
-
-                    if (option > 0 && option < 6) {
-                        break;
-                    }
-                } catch (InputMismatchException e) {
-                    scanner.nextLine();
-                } catch(NoSuchElementException e) {
+                if (!scanner.hasNext()) {
                     return;
+                }
+
+                if (scanner.hasNextInt()) {
+                    option = scanner.nextInt();
+                }
+
+                if (scanner.hasNextLine()) {
+                    scanner.nextLine();
+                }
+
+                if (option > 0 && option < 6) {
+                    break;
                 }
 
                 System.out.println();
@@ -52,14 +52,62 @@ public class Admin {
                 case 3 -> {
                     System.out.println("option 3");
                 }
-                case 4 -> {
-                    System.out.println("option 4");
-                }
-                case 5 -> {
-                    System.out.println("option 5");
-                }
+                case 4 -> addResources(scanner);
+                case 5 -> subtractResources(scanner);
             }
         }
+    }
+
+    public static void addResources(Scanner scanner) {
+        System.out.print("Enter the name of the item you want to add: ");
+        String itemName = scanner.nextLine();
+
+        int quantity = 0;
+
+        while (true) {
+            System.out.print("Enter the quantity you want to add: ");
+
+            if (scanner.hasNextInt()) {
+                quantity = scanner.nextInt();
+            }
+
+            scanner.nextLine();
+
+            if (quantity > 0) {
+                break;
+            }
+
+            System.out.println("\nInvalid value.\n");
+        }
+
+        System.out.println();
+        SocketHandler.marketplace.addToInventory(itemName, quantity);
+    }
+
+    public static void subtractResources(Scanner scanner) {
+        System.out.print("Enter the name of the item you want to subtract: ");
+        String itemName = scanner.nextLine();
+
+        int quantity = 0;
+
+        while (true) {
+            System.out.print("Enter the quantity you want to subtract: ");
+
+            if (scanner.hasNextInt()) {
+                quantity = scanner.nextInt();
+            }
+
+            scanner.nextLine();
+
+            if (quantity > 0) {
+                break;
+            }
+
+            System.out.println("\nInvalid value.\n");
+        }
+
+        System.out.println();
+        SocketHandler.marketplace.removeFromInventory(itemName, quantity);
     }
 
 }

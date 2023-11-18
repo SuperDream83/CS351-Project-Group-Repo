@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Marketplace {
+
     private List<MarketItem> inventory;
 
     private Scanner scanner = new Scanner(System.in);
@@ -12,7 +13,6 @@ public class Marketplace {
         inventory = new ArrayList<>();
         CsvUtils.loadMarketItems(inventory);
     }
-
 
     public List<MarketItem> getInventory() {
         return inventory;
@@ -44,18 +44,31 @@ public class Marketplace {
 
     public void addToInventory(String itemName, int quantity) {
         MarketItem item = findItem(itemName);
-        item.setQuantity(item.getQuantity() + quantity);
 
+        synchronized (this) {
+            if (item != null) {
+                item.setQuantity(item.getQuantity() + quantity);
+            } else {
+                System.out.println("Item not found.");
+            }
+        }
     }
 
     public void removeFromInventory(String itemName, int quantity) {
         MarketItem item = findItem(itemName);
-        if (item != null && item.getQuantity() >= quantity) {
-            item.setQuantity(item.getQuantity() - quantity);
+
+        synchronized (this) {
+            if (item != null) {
+                if (item.getQuantity() >= quantity) {
+                    item.setQuantity(item.getQuantity() - quantity);
+                } else {
+                    System.out.println("There's no enough quantity to subtract.");
+                }
+            } else {
+                System.out.println("Item not found.");
+            }
         }
         // Consider removing the item from the list if quantity becomes 0
     }
-
-
 
 }
