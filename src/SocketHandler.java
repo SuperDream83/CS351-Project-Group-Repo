@@ -2,19 +2,24 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class SocketHandler implements Runnable {
 
     Socket socket;
     Account userAccount;
     public static ArrayList<Account> onlineUsers = new ArrayList<>();
+    private static Map<Account, String> onlineUsersMap = new HashMap<>(); // <Account, IP> HashMap
+    private static ArrayList<Socket> clientSockets = new ArrayList<>();
     public static Marketplace marketplace = new Marketplace();
 
 
     SocketHandler(Socket socket) throws IOException {
         this.socket = socket;
-
     }
 
     @Override
@@ -25,6 +30,7 @@ public class SocketHandler implements Runnable {
             String msg = "";
             while (true) {
                 msg = scanner.nextLine();
+
 
                 // Note this is more of a register function
                 // Real login will parse CSV
@@ -39,10 +45,14 @@ public class SocketHandler implements Runnable {
                     userAccount = CsvUtils.getAccount(username, password);
 
                     if (userAccount != null) {
-                        out.println("SUCCESSFUL_LOGON");
+                        out.println("SUCCESSFUL_LOGON" + "|" + username + "|" + password);
                         onlineUsers.add(userAccount);
+                        onlineUsersMap.put(userAccount, socket.getRemoteSocketAddress().toString());
+                        clientSockets.add(socket);
+                        out.flush();
                     } else {
                         out.println("LOGON_FAILED");
+                        out.flush();
                     }
 
                 } else if (msg.contains("REGISTER")) {
@@ -51,14 +61,18 @@ public class SocketHandler implements Runnable {
                     String username = data[1].trim();
                     String password = data[2].trim();
 
-                    if (CsvUtils.checkAccountExists(username)){
-                        out.println("Error: Username already exits! Please pick a unique username.");
+                    if (CsvUtils.checkAccountExists(username)) {
+                        out.println("REGISTER_FAILED");
+                        out.flush();
                     } else {
                         userAccount = new Account(username, password, 1000);
 
                         CsvUtils.saveToCSV(userAccount);
                         onlineUsers.add(userAccount);
-                        out.println("Account Created! Welcome " + username + "!");
+                        onlineUsersMap.put(userAccount, socket.getRemoteSocketAddress().toString());
+                        clientSockets.add(socket);
+                        out.println("ACCOUNT_CREATED" + "|" + username + "|" + password);
+                        out.flush();
                     }
 
 
@@ -66,11 +80,14 @@ public class SocketHandler implements Runnable {
                     StringBuilder stringToSend = new StringBuilder();
                     for (Account account : onlineUsers) {
                         stringToSend.append("Username: ").append(account.getUserName()).append("-")
-                                .append("  Balance: ").append(account.getBalance()).append("-");
+                                .append("  Balance: ").append(account.getBalance()).append("-")
+                                .append("    IP: ").append(onlineUsersMap.get(account)).append("-");
                     }
-                    out.println(stringToSend);
+                    out.println("VIEW_ONLINE_USERS" + "|" + stringToSend);
+                    out.flush();
                 } else if (msg.contains("VIEW_USER_ACCOUNT")) {
-                    out.println(userAccount.printInventory());
+                    out.println("VIEW_USER_ACCOUNT" + "|" + userAccount.printInventory());
+                    out.flush();
                 } else if (msg.contains("SEND_MONEY_TO_USER")) {
 
                     String[] data = msg.split("\\|");
@@ -87,7 +104,7 @@ public class SocketHandler implements Runnable {
                     while (transactionFlag) {
 
                         int count = 0;
-                        for (Account account : onlineUsers) {
+                        for (Account account : onlineUsersMap.keySet()) {
                             if (account.getUserName().equals(sender)) {
                                 existingSenderBal = account.getBalance();
                                 senderFlag = true;
@@ -98,37 +115,49 @@ public class SocketHandler implements Runnable {
                         }
 
                         if (senderFlag && !recipientFlag) {
-                            out.println("ERROR: We couldn't find the recipient!");
+                            out.println("SEND_MONEY_TO_USER" + "|" + "ERROR: We couldn't find the recipient!");
+                            out.flush();
                             break;
                         } else if (!senderFlag && recipientFlag) {
-                            out.println("ERROR: We couldn't find the sender!");
+                            out.println("SEND_MONEY_TO_USER" + "|" + "ERROR: We couldn't find the sender!");
+                            out.flush();
                             break;
                         }
 
-                        synchronized (this) {
-                            // Update receiver Account
-                            for (Account account : onlineUsers) {
-                                if (account.getUserName().equals(recipient)) {
-                                    Account recipientAccount = account;
-                                    recipientAccount.incrementBalance(amount);
-                                    onlineUsers.remove(account);
-                                    onlineUsers.add(recipientAccount);
-                                    break;
+                        // Update receiver Account
+                        for (Account account : onlineUsersMap.keySet()) {
+                            if (account.getUserName().equals(recipient)) {
+                                Account recipientAccount = account;
+                                String recipientIP = onlineUsersMap.get(account);
+                                recipientAccount.incrementBalance(amount);
+                                onlineUsersMap.remove(account);
+                                onlineUsersMap.put(recipientAccount, socket.getRemoteSocketAddress().toString());
+                                for (Socket cliSocket : clientSockets) {
+                                    if (cliSocket.getRemoteSocketAddress().toString().equals(recipientIP)) {
+                                        // Creates a temp PW that will write to recipient client
+                                        PrintWriter specificPW = new PrintWriter(cliSocket.getOutputStream(), true);
+                                        // Sends message to recipient client that informs of balance update
+                                        specificPW.println("BALANCE_UPDATE" + "|" + sender + "|" + amount);
+                                        // closes temp PW
+                                        specificPW.flush();
+                                    }
                                 }
-                            }
-
-                            // Update Sender account
-                            for (Account account : onlineUsers) {
-                                if (account.getUserName().equals(sender)) {
-                                    Account senderAccount = account;
-                                    senderAccount.decrementBalance(amount);
-                                    onlineUsers.remove(account);
-                                    onlineUsers.add(senderAccount);
-                                    break;
-                                }
-
+                                break;
                             }
                         }
+
+                        // Update Sender account
+                        for (Account account : onlineUsersMap.keySet()) {
+                            if (account.getUserName().equals(sender)) {
+                                Account senderAccount = account;
+                                senderAccount.decrementBalance(amount);
+                                onlineUsersMap.remove(account);
+                                onlineUsersMap.put(senderAccount, socket.getRemoteSocketAddress().toString());
+                                break;
+                            }
+
+                        }
+
 
                         int updatedSenderBal = existingSenderBal - amount;
                         int updatedRecipientBal = existingRecipientBal + amount;
@@ -138,12 +167,12 @@ public class SocketHandler implements Runnable {
 
                         // Need to figure out if this is necessary
                         count = 0;
-                        for (Account account : onlineUsers) {
+                        for (Account account : onlineUsersMap.keySet()) {
                             if (account.getUserName().equals(sender)) {
                                 if (account.getBalance() == updatedSenderBal) {
                                     senderBalVal = true;
                                     break;
-                                } else if (count == onlineUsers.size()) {
+                                } else if (count == onlineUsersMap.size()) {
                                     account.setBalance(existingSenderBal);
                                 } else {
                                     count++;
@@ -154,12 +183,12 @@ public class SocketHandler implements Runnable {
 
                         // Need to figure out if this is necessary
                         count = 0;
-                        for (Account account : onlineUsers) {
+                        for (Account account : onlineUsersMap.keySet()) {
                             if (account.getUserName().equals(recipient)) {
                                 if (account.getBalance() == updatedRecipientBal) {
                                     recipientBalVal = true;
                                     break;
-                                } else if (count == onlineUsers.size()) {
+                                } else if (count == onlineUsersMap.size()) {
                                     account.setBalance(existingRecipientBal);
                                 } else {
                                     count++;
@@ -169,17 +198,20 @@ public class SocketHandler implements Runnable {
                         }
 
                         if (senderBalVal && recipientBalVal) {
-                            out.println("SUCCESS: " + amount + " sent to " + recipient);
+                            out.println("SEND_MONEY_TO_USER" + "|" + "SUCCESS: " + amount + " sent to " + recipient);
+                            out.flush();
                         } else {
                             out.println("ERROR: General Error");
+                            out.flush();
                         }
                         transactionFlag = false;
 
                     }
 
 
-                } else if (msg.contains("VIEW_MARKETPLACE")){
-                    out.println(marketplace.view());
+                } else if (msg.contains("VIEW_MARKETPLACE")) {
+                    out.println("VIEW_MARKETPLACE" + "|" + marketplace.view());
+                    out.flush();
                 } else if (msg.contains("BUY_ITEM")) {
                     String[] data = msg.split("\\|");
 
@@ -188,18 +220,21 @@ public class SocketHandler implements Runnable {
 
                     MarketItem item = marketplace.findItem(itemName);
                     if (item == null) {
-                        out.println("Item not found in the marketplace.");
+                        out.println("BUY_ITEM" + "|" + "Item not found in the marketplace.");
+                        out.flush();
                         break;
                     }
 
                     if (quantity <= 0 || item.getQuantity() < quantity) {
-                        out.println("Insufficient quantity available.");
+                        out.println("BUY_ITEM" + "|" + "Insufficient quantity available.");
+                        out.flush();
                         break;
                     }
 
                     int totalCost = item.getBuyPrice() * quantity;
                     if (userAccount.getBalance() < totalCost) {
-                        out.println("Insufficient balance to complete the transaction.");
+                        out.println("BUY_ITEM" + "|" + "Insufficient balance to complete the transaction.");
+                        out.flush();
                         break;
                     }
 
@@ -208,7 +243,8 @@ public class SocketHandler implements Runnable {
                     userAccount.addToInventory(itemName, quantity); // Add to user's inventory
                     userAccount.decrementBalance(totalCost); // Deduct the cost from the user's balance
 
-                    out.println("Purchase successful!");
+                    out.println("BUY_ITEM" + "|" + "Purchase successful!");
+                    out.flush();
 
 
                 } else if (msg.contains("SELL_ITEM")) {
@@ -219,12 +255,14 @@ public class SocketHandler implements Runnable {
 
                     Integer itemQuantity = userAccount.getInventory().get(itemName);
                     if (itemQuantity == null || itemQuantity == 0) {
-                        out.println("Item not found in your inventory.");
+                        out.println("SELL_ITEM" + "|" + "Item not found in your inventory.");
+                        out.flush();
                         break;
                     }
 
                     if (quantityToSell <= 0 || quantityToSell > itemQuantity) {
-                        out.println("Insufficient quantity to sell.");
+                        out.println("SELL_ITEM" + "|" + "Insufficient quantity to sell.");
+                        out.flush();
                         break;
                     }
 
@@ -242,18 +280,17 @@ public class SocketHandler implements Runnable {
                     // Update the user's balance
                     userAccount.incrementBalance(totalEarnings);
 
-                    out.println("Sale successful! You earned " + totalEarnings);
+                    out.println("SELL_ITEM" + "|" + "Sale successful! You earned " + totalEarnings);
+                    out.flush();
 
 
                 } else if (msg.contains("LOG_OFF")) {
                     String[] data = msg.split("\\|");
-                    synchronized (this) {
-                        for (Account account : onlineUsers){
-                            if (account.getUserName().equals(data[1])){
-                                CsvUtils.updateUserBalance(userAccount);
-                            }
+                    for (Account account : onlineUsersMap.keySet()) {
+                        if (account.getUserName().equals(data[1])) {
+                            CsvUtils.updateUserBalance(userAccount);
+                            onlineUsersMap.remove(account);
                         }
-                        onlineUsers.removeIf(account -> account.getUserName().equals(data[1]));
                     }
                 }
 

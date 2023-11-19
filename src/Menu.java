@@ -1,8 +1,12 @@
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.SocketException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 
 public class Menu {
 
@@ -10,7 +14,6 @@ public class Menu {
 
     private Account account;
 
-    private AccountUtils accountUtils;
     private PrintWriter printWriter;
     private BufferedReader in;
 
@@ -20,9 +23,9 @@ public class Menu {
         this.in = bufferedReader;
     }
 
-    public void displayMenu() {
+    public void displayMenu(BlockingQueue<Runnable> taskQueue) {
 
-        while (account == null){
+        while (account == null) {
             System.out.println("--------- WELCOME ---------");
             System.out.println("1. Log in");
             System.out.println("2. Register");
@@ -36,12 +39,18 @@ public class Menu {
                     case 1 -> {
                         // Logic for login
                         System.out.println("You selected: Log in");
-                        account = AccountUtils.login(printWriter, in);
+                        AccountUtils.login(printWriter, in);
+                        try {
+                            Runnable receiveLoginFromServer = taskQueue.take();
+                            receiveLoginFromServer.run();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     case 2 -> {
                         // Logic for registering a new user
                         System.out.println("You selected: Register");
-                        account = AccountUtils.register(printWriter, in);
+                        AccountUtils.register(printWriter, in);
                     }
                     case 3 -> System.out.println("Goodbye!");
                     default -> System.out.println("Invalid choice. Please select a number between 1 and 3.");
@@ -62,10 +71,11 @@ public class Menu {
             System.out.println("------------------------");
             System.out.print("Please enter your choice (1-4): ");
 
+
             try {
                 int choice = scanner.nextInt();
-                handleMenuChoice(choice);
-                if (choice == 4){
+                handleMenuChoice(choice, taskQueue);
+                if (choice == 4) {
                     break;
                 }
             } catch (InputMismatchException e) {
@@ -73,44 +83,47 @@ public class Menu {
                 scanner.next(); // clear the invalid input
             }
         }
+
     }
 
     // CHOICE HANDLER
-    private void handleMenuChoice(int choice) {
+    private void handleMenuChoice(int choice, BlockingQueue<Runnable> taskQueue) {
         switch (choice) {
             case 1:
                 // Logic for viewing inventory
                 System.out.println("You selected: View my inventory");
                 printWriter.println("VIEW_USER_ACCOUNT");
                 try {
-                    String output = in.readLine();
-                    String[] splitOut = output.split("-");
-                    for (String line : splitOut) {
-                        System.out.println(line);
-                    }
-                    break;
-                } catch (IOException e) {
+                    Runnable viewUserInv = taskQueue.take();
+                    viewUserInv.run();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
+                break;
             case 2:
                 // Logic for viewing logged on users
                 System.out.println("You selected: View logged on users");
-                AccountUtils.accountMenu(printWriter, in, account);
+                AccountUtils.accountMenu(printWriter, in, account, taskQueue);
                 break;
             case 3:
                 // Logic for viewing the marketplace
                 System.out.println("You selected: View Marketplace");
-                MarketUtils.marketplaceMenu(printWriter, in, account);
+                MarketUtils.marketplaceMenu(printWriter, in, account, taskQueue);
                 break;
             case 4:
-                printWriter.println("LOG_OFF" +  "|" + account.getUserName());
+                printWriter.println("LOG_OFF" + "|" + account.getUserName());
                 System.out.println("Goodbye!");
                 break;
             default:
                 System.out.println("Invalid choice. Please select a number between 1 and 4.");
                 break;
         }
+
     }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
 
 }

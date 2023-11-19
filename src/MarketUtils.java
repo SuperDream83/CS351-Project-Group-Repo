@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 
 public class MarketUtils {
 
@@ -13,7 +15,8 @@ public class MarketUtils {
 
     }
 
-    public static void marketplaceMenu(PrintWriter printWriter, BufferedReader in, Account userAccount) {
+    public static void marketplaceMenu(PrintWriter printWriter, BufferedReader in, Account userAccount,
+                                       BlockingQueue<Runnable> taskQueue) {
         boolean continueMarketplace = true;
 
         while (continueMarketplace) {
@@ -29,22 +32,30 @@ public class MarketUtils {
                 case "1":
                     printWriter.println("VIEW_MARKETPLACE");
                     try {
-                        String output = in.readLine();
-                        String[] splitOut = output.split("-");
-                        for (String line : splitOut) {
-                            System.out.println(line);
-                        }
-                    } catch (IOException e){
+                        Runnable viewMarketplace = taskQueue.take();
+                        viewMarketplace.run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "2":
+                    buyItems(userAccount, printWriter, in);
+                    try {
+                        Runnable buyItems = taskQueue.take();
+                        buyItems.run();
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
-
-                break;
-                case "2":
-                    buyItems(userAccount, printWriter, in);
                     break;
                 case "3":
-                    sellItems(userAccount, printWriter, in);
+                    sellItems(userAccount, printWriter, in, taskQueue);
+                    try {
+                        Runnable sellItems = taskQueue.take();
+                        sellItems.run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "4":
                     continueMarketplace = false;
@@ -67,28 +78,20 @@ public class MarketUtils {
 
         printWriter.println("BUY_ITEM" + "|" + itemName + "|" + quantity);
 
-        try {
-            String output = in.readLine();
-            System.out.println(output);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
-    public static void sellItems(Account userAccount, PrintWriter printWriter, BufferedReader in) {
+    public static void sellItems(Account userAccount, PrintWriter printWriter, BufferedReader in,
+                                 BlockingQueue<Runnable> taskQueue) {
         Scanner scanner = new Scanner(System.in);
         // Display the user's inventory
         printWriter.println("VIEW_USER_ACCOUNT");
         try {
-            String output = in.readLine();
-            String[] splitOut = output.split("-");
-            for (String line : splitOut) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
+            Runnable viewCurrentInv = taskQueue.take();
+            viewCurrentInv.run();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        printWriter.flush();
 
         System.out.print("Enter the name of the item you want to sell: ");
         String itemName = scanner.nextLine();
@@ -100,11 +103,5 @@ public class MarketUtils {
 
         printWriter.println("SELL_ITEM" + "|" + itemName + "|" + quantityToSell);
 
-        try {
-            String output = in.readLine();
-            System.out.println(output);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
