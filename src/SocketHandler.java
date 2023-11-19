@@ -8,9 +8,12 @@ public class SocketHandler implements Runnable {
 
     Socket socket;
     Account userAccount;
-    public static ArrayList<Account> onlineUsers = new ArrayList<>();
-    public static Marketplace marketplace = new Marketplace();
 
+    public static ArrayList<Account> users = CsvUtils.getAccounts();
+
+    public static ArrayList<Account> onlineUsers = new ArrayList<>();
+
+    public static Marketplace marketplace = new Marketplace();
 
     SocketHandler(Socket socket) throws IOException {
         this.socket = socket;
@@ -51,7 +54,7 @@ public class SocketHandler implements Runnable {
                     String username = data[1].trim();
                     String password = data[2].trim();
 
-                    if (CsvUtils.checkAccountExists(username)){
+                    if (CsvUtils.checkAccountExists(username)) {
                         out.println("Error: Username already exits! Please pick a unique username.");
                     } else {
                         userAccount = new Account(username, password, 1000);
@@ -60,7 +63,6 @@ public class SocketHandler implements Runnable {
                         onlineUsers.add(userAccount);
                         out.println("Account Created! Welcome " + username + "!");
                     }
-
 
                 } else if (msg.contains("VIEW_ONLINE_USERS")) {
                     StringBuilder stringToSend = new StringBuilder();
@@ -177,8 +179,7 @@ public class SocketHandler implements Runnable {
 
                     }
 
-
-                } else if (msg.contains("VIEW_MARKETPLACE")){
+                } else if (msg.contains("VIEW_MARKETPLACE")) {
                     out.println(marketplace.view());
                 } else if (msg.contains("BUY_ITEM")) {
                     String[] data = msg.split("\\|");
@@ -209,7 +210,6 @@ public class SocketHandler implements Runnable {
                     userAccount.decrementBalance(totalCost); // Deduct the cost from the user's balance
 
                     out.println("Purchase successful!");
-
 
                 } else if (msg.contains("SELL_ITEM")) {
                     String[] data = msg.split("\\|");
@@ -244,12 +244,11 @@ public class SocketHandler implements Runnable {
 
                     out.println("Sale successful! You earned " + totalEarnings);
 
-
                 } else if (msg.contains("LOG_OFF")) {
                     String[] data = msg.split("\\|");
                     synchronized (this) {
-                        for (Account account : onlineUsers){
-                            if (account.getUserName().equals(data[1])){
+                        for (Account account : onlineUsers) {
+                            if (account.getUserName().equals(data[1])) {
                                 CsvUtils.updateUserBalance(userAccount);
                             }
                         }
@@ -257,12 +256,11 @@ public class SocketHandler implements Runnable {
                     }
                 }
 
-
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
     }
+
 }

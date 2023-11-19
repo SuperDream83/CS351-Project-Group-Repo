@@ -1,16 +1,22 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class CsvUtils {
 
+    private static String tempAccountsFilePath = "Resources/tempAccounts.csv";
+    static String accountsFilename = "Resources/accounts.csv";
+    static String marketFilename = "Resources/market.csv";
 
-    private static String tempAccountsFilePath = "Resources\\tempAccounts.csv";
-    static String accountsFilename = "Resources\\accounts.csv"; // Adjust the path if necessary
-    static String marketFilename = "Resources\\market.csv"; // Adjust the path if necessary
-  
-
-      public static Account getAccount(String username, String password) {
+    public static Account getAccount(String username, String password) {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilename))) {
             String line;
@@ -19,7 +25,7 @@ public class CsvUtils {
                 String[] parts = line.split(",");
                 if (parts.length == 3) {
                     if (parts[0].equals(username) && parts[1].equals(password)) {
-                        Account account = new Account(parts[0],parts[1],Integer.parseInt(parts[2]));
+                        Account account = new Account(parts[0], parts[1], Integer.parseInt(parts[2]));
                         return account;
                     }
                 }
@@ -144,6 +150,28 @@ public class CsvUtils {
         } else {
             System.err.println("Could not delete old file");
         }
+    }
+
+    public static ArrayList<Account> getAccounts() {
+        ArrayList<Account> accounts = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilename))) {
+            String line;
+            reader.readLine(); // Skip header line
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    accounts.add(new Account(parts[0], parts[1], Integer.parseInt(parts[2])));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.out.println("Error parsing balance");
+            e.printStackTrace();
+        }
+
+        return accounts;
     }
 
 }

@@ -29,15 +29,37 @@ public class Account implements Serializable {
     }
 
     public void setBalance(Integer balance) {
-        this.balance = balance;
+        synchronized (this) {
+            this.balance = balance;
+        }
     }
 
-    public void incrementBalance(Integer amount){
-        this.setBalance(balance+amount);
+    public void incrementBalance(Integer amount) {
+        synchronized (this) {
+            this.setBalance(balance + amount);
+        }
     }
 
-    public void decrementBalance(Integer amount){
-        this.setBalance(balance-amount);
+    public boolean decrementBalance(Integer amount) {
+        synchronized (this) {
+            if (balance >= amount) {
+                this.setBalance(balance - amount);
+                return true;
+            } else {
+                System.out.println("Cannot decrement amount, there is no enough balance");
+                return false;
+            }
+        }
+    }
+
+    public void transferBalance(Integer amount, Account toAccount) {
+        synchronized (this) {
+            if (this.decrementBalance(amount)) {
+                toAccount.incrementBalance(amount);
+            } else {
+                System.out.println("Cannot transfer amount");
+            }
+        }
     }
 
     // Inventory stuff
