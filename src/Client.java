@@ -16,7 +16,7 @@ public class Client {
     private PrintWriter printWriter;
     private Menu menu;
 
-    private static BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<Runnable> taskQueue;
 
     Client() {
         try {
@@ -24,6 +24,7 @@ public class Client {
             this.printWriter = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.menu = new Menu(in, printWriter);
+            this.taskQueue = new LinkedBlockingQueue<>();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -192,7 +193,7 @@ public class Client {
         Client client = new Client();
 
         Thread listenForMsg = new Thread(client.listenForMessage());
-        Thread runClient = new Thread(client.runClient(taskQueue));
+        Thread runClient = new Thread(client.runClient(client.taskQueue));
 
         listenForMsg.start();
         runClient.start();

@@ -13,7 +13,7 @@ public class AccountUtils {
 
     }
 
-    public static void login(PrintWriter printWriter, BufferedReader in) {
+    public static void login(PrintWriter printWriter) {
         System.out.print("Enter username (or 'exit' to cancel): ");
         String username = scanner.nextLine();
 
@@ -27,7 +27,7 @@ public class AccountUtils {
         printWriter.println("LOGIN" + "|" + username + "|" + password);
     }
 
-    public static void register(PrintWriter printWriter, BufferedReader in) {
+    public static void register(PrintWriter printWriter) {
         System.out.print("Enter username (or 'exit' to cancel): ");
         String username = scanner.nextLine();
 
@@ -53,7 +53,7 @@ public class AccountUtils {
 
     }
 
-    public static void accountMenu(PrintWriter printWriter, BufferedReader in, Account account,
+    public static void accountMenu(PrintWriter printWriter, Account account,
                                    BlockingQueue<Runnable> taskQueue) {
         boolean continueAccount = true;
 
@@ -76,7 +76,7 @@ public class AccountUtils {
                     }
                     break;
                 case "2":
-                    sendMoneyToUsers(printWriter, in, account);
+                    sendMoneyToUsers(printWriter, account);
                     try {
                         Runnable sendMoneyToUsers = taskQueue.take();
                         sendMoneyToUsers.run();
@@ -94,7 +94,7 @@ public class AccountUtils {
         }
     }
 
-    private static void sendMoneyToUsers(PrintWriter printWriter, BufferedReader in, Account account) {
+    private static void sendMoneyToUsers(PrintWriter printWriter, Account account) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("----Send money to user----");
         System.out.print("Enter user you wish to send money too: ");

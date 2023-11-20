@@ -39,7 +39,7 @@ public class Menu {
                     case 1 -> {
                         // Logic for login
                         System.out.println("You selected: Log in");
-                        AccountUtils.login(printWriter, in);
+                        AccountUtils.login(printWriter);
                         try {
                             Runnable receiveLoginFromServer = taskQueue.take();
                             receiveLoginFromServer.run();
@@ -50,7 +50,7 @@ public class Menu {
                     case 2 -> {
                         // Logic for registering a new user
                         System.out.println("You selected: Register");
-                        AccountUtils.register(printWriter, in);
+                        AccountUtils.register(printWriter);
                     }
                     case 3 -> System.out.println("Goodbye!");
                     default -> System.out.println("Invalid choice. Please select a number between 1 and 3.");
@@ -103,7 +103,7 @@ public class Menu {
             case 2:
                 // Logic for viewing logged on users
                 System.out.println("You selected: View logged on users");
-                AccountUtils.accountMenu(printWriter, in, account, taskQueue);
+                AccountUtils.accountMenu(printWriter, account, taskQueue);
                 break;
             case 3:
                 // Logic for viewing the marketplace
