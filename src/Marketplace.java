@@ -62,7 +62,7 @@ public class Marketplace {
                 if (item.getQuantity() >= quantity) {
                     item.setQuantity(item.getQuantity() - quantity);
                 } else {
-                    System.out.println("There's no enough quantity to subtract.");
+                    System.out.println("There is no enough quantity to subtract.");
                 }
             } else {
                 System.out.println("Item not found.");

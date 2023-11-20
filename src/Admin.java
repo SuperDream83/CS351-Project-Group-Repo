@@ -46,6 +46,11 @@ public class Admin {
 
     public static void addMoney(Scanner scanner) {
         System.out.print("Enter the user name of the balance to increment: ");
+
+        if (!scanner.hasNextLine()) {
+            return;
+        }
+
         String name = scanner.nextLine();
 
         Account user = null;
@@ -67,6 +72,11 @@ public class Admin {
 
     public static void deductMoney(Scanner scanner) {
         System.out.print("Enter the user name of the balance to decrement: ");
+
+        if (!scanner.hasNextLine()) {
+            return;
+        }
+
         String name = scanner.nextLine();
 
         Account user = null;
@@ -88,7 +98,12 @@ public class Admin {
 
     public static void transferMoney(Scanner scanner) {
         System.out.print("Enter the user name of sender: ");
-        String senderName = scanner.nextLine().trim();
+
+        if (!scanner.hasNextLine()) {
+            return;
+        }
+
+        String senderName = scanner.nextLine();
 
         Account sender = null;
 
@@ -104,7 +119,12 @@ public class Admin {
         }
 
         System.out.print("Enter the user name of recipient: ");
-        String recipientName = scanner.nextLine().trim();
+
+        if (!scanner.hasNextLine()) {
+            return;
+        }
+
+        String recipientName = scanner.nextLine();
 
         Account recipient = null;
 
@@ -126,6 +146,11 @@ public class Admin {
 
     public static void addResources(Scanner scanner) {
         System.out.print("Enter the name of the item you want to add: ");
+
+        if (!scanner.hasNextLine()) {
+            return;
+        }
+
         String itemName = scanner.nextLine();
 
         int quantity = readAmount(scanner, "Enter the amount you want to add: ");
@@ -136,7 +161,13 @@ public class Admin {
 
     public static void subtractResources(Scanner scanner) {
         System.out.print("Enter the name of the item you want to subtract: ");
+
+        if (!scanner.hasNextLine()) {
+            return;
+        }
+
         String itemName = scanner.nextLine();
+
         int quantity = readAmount(scanner, "Enter the amount you want to subtract: ");
 
         System.out.println();
