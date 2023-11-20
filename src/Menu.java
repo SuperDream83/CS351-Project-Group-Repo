@@ -51,8 +51,17 @@ public class Menu {
                         // Logic for registering a new user
                         System.out.println("You selected: Register");
                         AccountUtils.register(printWriter);
+                        try {
+                            Runnable receiveRegisterFromServer = taskQueue.take();
+                            receiveRegisterFromServer.run();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    case 3 -> System.out.println("Goodbye!");
+                    case 3 -> {
+                        System.out.println("Goodbye!");
+                        System.exit(0);
+                    }
                     default -> System.out.println("Invalid choice. Please select a number between 1 and 3.");
                 }
             } catch (InputMismatchException e) {

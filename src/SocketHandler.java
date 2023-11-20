@@ -37,6 +37,14 @@ public class SocketHandler implements Runnable {
 
                     userAccount = CsvUtils.getAccount(username, password);
 
+                    // validation to ensure only 1 account is logged in on 1 client at a time
+                    for (Account account : onlineUsersMap.keySet()){
+                        if (account.getUserName().equals(username)) {
+                            userAccount = null;
+                            break;
+                        }
+                    }
+
                     if (userAccount != null) {
                         out.println("SUCCESSFUL_LOGON" + "|" + username + "|" + password);
                         onlineUsersMap.put(userAccount, socket);
