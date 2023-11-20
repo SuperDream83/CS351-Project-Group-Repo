@@ -2,8 +2,8 @@
 /shelf/
 /workspace.xml
 # So can pull down main
-.idea/deployment.xml
-.idea/misc.xml
+/deployment.xml
+/misc.xml
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files
