@@ -3,20 +3,22 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class AdminTest extends CliTest {
+public class AdminTest extends CLITest {
 
     @Test
     public void testAddMoney() {
+        //mock the user input
         setSystemIn("1\nmissing\n1\nKeti\n100\n");
-
+        //retrieve user Keti
         Account account = SocketHandler.users.get(4);
 
         account.setBalance(10);
 
         Admin.run();
+        //get the captured console output
+        String out = getSystemOut();
 
-        String out = outContent.toString();
-
+        //print the captured console output
         System.err.println(out);
 
         assertTrue(out.contains("ADMIN MENU"));
@@ -34,7 +36,7 @@ public class AdminTest extends CliTest {
 
         Admin.run();
 
-        String out = outContent.toString();
+        String out = getSystemOut();
 
         System.err.println(out);
 
@@ -56,7 +58,7 @@ public class AdminTest extends CliTest {
 
         Admin.run();
 
-        String out = outContent.toString();
+        String out = getSystemOut();
 
         System.err.println(out);
 
@@ -78,7 +80,7 @@ public class AdminTest extends CliTest {
 
         Admin.run();
 
-        String out = outContent.toString();
+        String out = getSystemOut();
 
         System.err.println(out);
 
@@ -97,7 +99,7 @@ public class AdminTest extends CliTest {
 
         Admin.run();
 
-        String out = outContent.toString();
+        String out = getSystemOut();
 
         System.err.println(out);
 

@@ -10,11 +10,11 @@ public class MarketplaceTest {
 
         MarketItem iron = marketplace.findItem("Iron");
 
-        assertEquals(30, iron.getQuantity());
+        iron.setQuantity(1000);
 
         Thread t1 = new Thread(() -> {
             for (int i = 0; i < 1000; i++) {
-                marketplace.addToInventory("Iron", 10);
+                marketplace.addToInventory("Iron", 100);
             }
         });
 
@@ -31,7 +31,7 @@ public class MarketplaceTest {
         t1.join(); // wait for thread t1's completion
         t2.join(); // wait for thread t2's completion
 
-        assertEquals(9030, iron.getQuantity());
+        assertEquals(100000, iron.getQuantity());
     }
 
 }

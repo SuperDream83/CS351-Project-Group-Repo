@@ -7,6 +7,7 @@ public class AccountTest {
 
     @Test
     public void balanceUpdateTest() throws InterruptedException {
+        //create the sender and recipient account
         Account sender = new Account("SENDER", null, 1000);
         Account recipient = new Account("RECIPIENT", null, 1000);
 

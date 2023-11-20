@@ -12,7 +12,6 @@ public class ServerClientTest {
 
     boolean clientError;
 
-    ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Test
     public void executionTest() throws InterruptedException {

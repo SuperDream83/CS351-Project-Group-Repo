@@ -35,7 +35,7 @@ public class Admin {
             }
 
             System.out.println();
-
+            //execute a function based on the chosen option
             switch (option) {
                 case 1 -> addMoney(scanner);
                 case 2 -> deductMoney(scanner);
@@ -47,6 +47,7 @@ public class Admin {
         }
     }
 
+    //add money methos
     public static void addMoney(Scanner scanner) {
         System.out.print("Enter the user name of the balance to increment: ");
 
@@ -57,7 +58,7 @@ public class Admin {
         String name = scanner.nextLine();
 
         Account user = null;
-
+        //search for user by name
         for (Account account : SocketHandler.users) {
             if (account.getUserName().equals(name)) {
                 user = account;
@@ -99,6 +100,7 @@ public class Admin {
         }
     }
 
+    //transfer money using the sender and the recipient.
     public static void transferMoney(Scanner scanner) {
         System.out.print("Enter the user name of sender: ");
 
@@ -109,7 +111,7 @@ public class Admin {
         String senderName = scanner.nextLine();
 
         Account sender = null;
-
+        //search the sender by name
         for (Account account : SocketHandler.users) {
             if (account.getUserName().equals(senderName)) {
                 sender = account;
@@ -130,7 +132,7 @@ public class Admin {
         String recipientName = scanner.nextLine();
 
         Account recipient = null;
-
+        //search the recipient by name
         for (Account account : SocketHandler.users) {
             if (account.getUserName().equals(recipientName)) {
                 recipient = account;
@@ -177,20 +179,21 @@ public class Admin {
         SocketHandler.marketplace.removeFromInventory(itemName, quantity);
     }
 
+    //receive an integer amount from the user
     private static int readAmount(Scanner scanner, String text) {
         int quantity = 0;
 
         while (true) {
             System.out.print(text);
-
+            //skip if there is no more input to process
             if (!scanner.hasNext()) {
                 break;
             }
-
+            //read an integer
             if (scanner.hasNextInt()) {
                 quantity = scanner.nextInt();
             }
-
+            //discard the remaining characters
             if (scanner.hasNextLine()) {
                 scanner.nextLine();
             }
