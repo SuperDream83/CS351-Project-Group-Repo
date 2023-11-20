@@ -39,23 +39,27 @@ public class Menu {
                     case 1 -> {
                         // Logic for login
                         System.out.println("You selected: Log in");
-                        AccountUtils.login(printWriter);
-                        try {
-                            Runnable receiveLoginFromServer = taskQueue.take();
-                            receiveLoginFromServer.run();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        int executor = AccountUtils.login(printWriter);
+                        if (executor == 1) {
+                            try {
+                                Runnable receiveLoginFromServer = taskQueue.take();
+                                receiveLoginFromServer.run();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                     case 2 -> {
                         // Logic for registering a new user
                         System.out.println("You selected: Register");
-                        AccountUtils.register(printWriter);
-                        try {
-                            Runnable receiveRegisterFromServer = taskQueue.take();
-                            receiveRegisterFromServer.run();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        int executor = AccountUtils.register(printWriter);
+                        if (executor == 1) {
+                            try {
+                                Runnable receiveRegisterFromServer = taskQueue.take();
+                                receiveRegisterFromServer.run();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                     case 3 -> {

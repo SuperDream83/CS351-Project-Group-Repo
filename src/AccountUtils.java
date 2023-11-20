@@ -13,26 +13,27 @@ public class AccountUtils {
 
     }
 
-    public static void login(PrintWriter printWriter) {
+    public static int login(PrintWriter printWriter) {
         System.out.print("Enter username (or 'exit' to cancel): ");
         String username = scanner.nextLine();
 
         if (username.equalsIgnoreCase("exit")) {
-            return; // User chose to exit
+            return 0; // User chose to exit
         }
 
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
         printWriter.println("LOGIN" + "|" + username + "|" + password);
+        return 1;
     }
 
-    public static void register(PrintWriter printWriter) {
+    public static int register(PrintWriter printWriter) {
         System.out.print("Enter username (or 'exit' to cancel): ");
         String username = scanner.nextLine();
 
         if (username.equalsIgnoreCase("exit")) {
-            return; // User chose to exit
+            return 0; // User chose to exit
         }
 
         String password = "";
@@ -49,6 +50,7 @@ public class AccountUtils {
         }
 
         printWriter.println("REGISTER" + "|" + username + "|" + password);
+        return 1;
 
 
     }
