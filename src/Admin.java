@@ -19,14 +19,17 @@ public class Admin {
             System.out.println();
             System.out.print("Please enter your choice (1-5): ");
 
+            // Leave when there is nothing to read from the standard input
             if (!scanner.hasNext()) {
                 return;
             }
 
+            // Attempt to read an integer
             if (scanner.hasNextInt()) {
                 option = scanner.nextInt();
             }
 
+            // Discard any left over character
             if (scanner.hasNextLine()) {
                 scanner.nextLine();
             }
