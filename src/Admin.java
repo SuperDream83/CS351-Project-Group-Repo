@@ -15,6 +15,7 @@ public class Admin {
             System.out.println("3. Transfer money");
             System.out.println("4. Add resources");
             System.out.println("5. Subtract resources");
+            System.out.println("6. Server Shutdown");
             System.out.println("------------------------");
             System.out.println();
             System.out.print("Please enter your choice (1-5): ");
@@ -42,12 +43,30 @@ public class Admin {
                 case 3 -> transferMoney(scanner);
                 case 4 -> addResources(scanner);
                 case 5 -> subtractResources(scanner);
+                case 6 -> serverShutdown();
                 default -> System.out.println("Invalid option, please try again.");
             }
         }
     }
 
-    //add money methos
+    private static void serverShutdown() {
+
+        if (SocketHandler.getOnlineUsersMap().keySet().isEmpty()) {
+            // marketplace persistence
+        } else {
+            for (Account account : SocketHandler.getOnlineUsersMap().keySet()) {
+                // Persist account balance
+                CsvUtils.updateUserBalance(account);
+                //Persist user inventory
+            }
+            // persist marketplace
+        }
+        System.out.println("Server shutting down...");
+        System.exit(0);
+
+    }
+
+    //add money methods
     public static void addMoney(Scanner scanner) {
         System.out.print("Enter the user name of the balance to increment: ");
 

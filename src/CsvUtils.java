@@ -152,6 +152,8 @@ public class CsvUtils {
         }
     }
 
+
+    // Returns a list of all users on the system
     public static ArrayList<Account> getAccounts() {
         ArrayList<Account> accounts = new ArrayList<>();
 

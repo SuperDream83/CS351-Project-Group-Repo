@@ -252,4 +252,10 @@ public class SocketHandler implements Runnable {
 
     }
 
+
+    public static Map<Account, Socket> getOnlineUsersMap() {
+        return onlineUsersMap;
+    }
+
+
 }
