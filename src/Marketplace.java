@@ -71,8 +71,5 @@ public class Marketplace {
         // Consider removing the item from the list if quantity becomes 0
     }
 
-    public void saveInventory() {
-        CsvUtils.saveMarketItems(this.inventory);
-    }
 
 }

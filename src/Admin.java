@@ -51,18 +51,18 @@ public class Admin {
 
     private static void serverShutdown() {
 
-        if (SocketHandler.getOnlineUsersMap().keySet().isEmpty()) {
-            // marketplace persistence
-        } else {
+        if (!SocketHandler.getOnlineUsersMap().keySet().isEmpty()) {
+
             for (Account account : SocketHandler.getOnlineUsersMap().keySet()) {
                 // Persist account balance
                 CsvUtils.updateUserBalance(account);
                 //Persist user inventory
                 InventoryUtils.updateInventoryInCSV(account);
+
             }
-            // persist marketplace
-            
         }
+        // persist marketplace
+        CsvUtils.saveMarketItems(SocketHandler.marketplace.getInventory());
         System.out.println("Server shutting down...");
         System.exit(0);
 
