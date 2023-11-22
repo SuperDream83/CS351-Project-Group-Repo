@@ -48,6 +48,7 @@ public class SocketHandler implements Runnable {
 
                     if (userAccount != null) {
                         out.println("SUCCESSFUL_LOGON" + "|" + username + "|" + password);
+                        InventoryUtils.readInventoryForAccount(userAccount);
                         onlineUsersMap.put(userAccount, socket);
                         out.flush();
                     } else {
@@ -239,6 +240,7 @@ public class SocketHandler implements Runnable {
                     String[] data = msg.split("\\|");
                     for (Account account : onlineUsersMap.keySet()) {
                         if (account.getUserName().equals(data[1])) {
+                            InventoryUtils.updateInventoryInCSV(userAccount);
                             CsvUtils.updateUserBalance(userAccount);
                             onlineUsersMap.remove(account);
                         }

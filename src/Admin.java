@@ -58,8 +58,10 @@ public class Admin {
                 // Persist account balance
                 CsvUtils.updateUserBalance(account);
                 //Persist user inventory
+                InventoryUtils.updateInventoryInCSV(account);
             }
             // persist marketplace
+            
         }
         System.out.println("Server shutting down...");
         System.exit(0);

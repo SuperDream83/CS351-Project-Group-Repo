@@ -176,4 +176,17 @@ public class CsvUtils {
         return accounts;
     }
 
+    public static void saveMarketItems(List<MarketItem> inventory) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(marketFilename))) {
+            writer.write("item,quantity,buyPrice,sellPrice\n"); // Writing the header
+
+            for (MarketItem item : inventory) {
+                writer.write(item.getItem() + "," + item.getQuantity() + ","
+                        + item.getBuyPrice() + "," + item.getSellPrice() + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
