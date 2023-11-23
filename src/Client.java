@@ -68,10 +68,18 @@ public class Client {
 
                             JOptionPane.showMessageDialog(null, "You have received: " + amount + " from " + sender);
 
-                            //infoBox("You have received: " + amount + " from " + sender, "Balance Update");
-
 
                             // Conditional for Account Login
+                        } else if (msgFromServer.contains("SERVER_DISCONNECT")) {
+                            JOptionPane.showMessageDialog(null, "Warning: Server is shutting down...");
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            System.exit(0);
+
                         } else if (msgFromServer.contains("SUCCESSFUL_LOGON")) {
                             // Balance is 0 on client side as actual balance is kept on online user list on server
 
@@ -198,10 +206,6 @@ public class Client {
         listenForMsg.start();
         runClient.start();
 
-    }
-
-    public static void infoBox(String infoMessage, String titleBar) {
-        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
     }
 
 

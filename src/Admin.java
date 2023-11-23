@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Admin {
@@ -58,9 +61,26 @@ public class Admin {
                 CsvUtils.updateUserBalance(account);
                 //Persist user inventory
                 InventoryUtils.updateInventoryInCSV(account);
+                Socket tempSocket = SocketHandler.getOnlineUsersMap().get(account);
+
+                // Creates a temp PW that will write to recipient client
+                try {
+                    PrintWriter specificPW = new PrintWriter(tempSocket.getOutputStream(), true);
+                    // Sends message to recipient client that informs of balance update
+                    specificPW.println("SERVER_DISCONNECT");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
             }
         }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // persist marketplace
         CsvUtils.saveMarketItems(SocketHandler.marketplace.getInventory());
         System.out.println("Server shutting down...");
