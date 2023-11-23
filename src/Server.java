@@ -21,7 +21,7 @@ public class Server implements Runnable {
         try {
             while (true) {
                 Socket client = serverSocket.accept();
-                System.out.println("Client connected");
+                //System.out.println("Client connected");
                 // Create socketHander
                 // Pass to threadpool
                 threadpool.submit(new SocketHandler(client));

@@ -72,6 +72,16 @@ public class Client {
 
 
                             // Conditional for Account Login
+                        } else if (msgFromServer.contains("SERVER_DISCONNECT")) {
+                            JOptionPane.showMessageDialog(null, "Warning: Server is shutting down...");
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            System.exit(0);
+
                         } else if (msgFromServer.contains("SUCCESSFUL_LOGON")) {
                             // Balance is 0 on client side as actual balance is kept on online user list on server
 
