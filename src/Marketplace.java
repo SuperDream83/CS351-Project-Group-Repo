@@ -42,34 +42,38 @@ public class Marketplace {
         return null; // Item not found
     }
 
-    public void addToInventory(String itemName, int quantity) {
+    public boolean addToInventory(String itemName, int quantity) {
         MarketItem item = findItem(itemName);
 
         synchronized (this) {
             if (item != null) {
                 item.setQuantity(item.getQuantity() + quantity);
+                return true;
             } else {
                 System.out.println("Item not found.");
+                return false;
             }
         }
     }
 
-    public void removeFromInventory(String itemName, int quantity) {
+    public boolean removeFromInventory(String itemName, int quantity) {
         MarketItem item = findItem(itemName);
 
         synchronized (this) {
             if (item != null) {
                 if (item.getQuantity() >= quantity) {
                     item.setQuantity(item.getQuantity() - quantity);
+                    return true;
                 } else {
                     System.out.println("There is no enough quantity to subtract.");
                 }
             } else {
                 System.out.println("Item not found.");
             }
+
+            return false;
         }
         // Consider removing the item from the list if quantity becomes 0
     }
-
 
 }

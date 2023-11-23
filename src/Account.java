@@ -52,12 +52,14 @@ public class Account implements Serializable {
         }
     }
 
-    public void transferBalance(Integer amount, Account toAccount) {
+    public boolean transferBalance(Integer amount, Account toAccount) {
         synchronized (this) {
             if (this.decrementBalance(amount)) {
                 toAccount.incrementBalance(amount);
+                return true;
             } else {
                 System.out.println("Cannot transfer amount");
+                return false;
             }
         }
     }

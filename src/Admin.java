@@ -18,7 +18,7 @@ public class Admin {
             System.out.println("6. Server Shutdown");
             System.out.println("------------------------");
             System.out.println();
-            System.out.print("Please enter your choice (1-5): ");
+            System.out.print("Please enter your choice (1-6): ");
 
             // Leave when there is nothing to read from the standard input
             if (!scanner.hasNext()) {
@@ -70,7 +70,7 @@ public class Admin {
 
     //add money methods
     public static void addMoney(Scanner scanner) {
-        System.out.print("Enter the user name of the balance to increment: ");
+        System.out.print("Enter the username of the balance to increment: ");
 
         if (!scanner.hasNextLine()) {
             return;
@@ -90,13 +90,15 @@ public class Admin {
             int amount = readAmount(scanner, "Enter amount to increment: ");
 
             user.incrementBalance(amount);
+
+            System.out.println("\n" + user.getUserName() + "'s " + amount + "£ is added!");
         } else {
             System.out.println("User not found");
         }
     }
 
     public static void deductMoney(Scanner scanner) {
-        System.out.print("Enter the user name of the balance to decrement: ");
+        System.out.print("Enter the username of the balance to decrement: ");
 
         if (!scanner.hasNextLine()) {
             return;
@@ -116,6 +118,8 @@ public class Admin {
             int amount = readAmount(scanner, "Enter amount to decrement: ");
 
             user.decrementBalance(amount);
+
+            System.out.println("\n" + user.getUserName() + "'s £" + amount + "£ is decremented!");
         } else {
             System.out.println("User not found");
         }
@@ -123,7 +127,7 @@ public class Admin {
 
     //transfer money using the sender and the recipient.
     public static void transferMoney(Scanner scanner) {
-        System.out.print("Enter the user name of sender: ");
+        System.out.print("Enter the username of sender: ");
 
         if (!scanner.hasNextLine()) {
             return;
@@ -144,7 +148,7 @@ public class Admin {
             return;
         }
 
-        System.out.print("Enter the user name of recipient: ");
+        System.out.print("Enter the username of recipient: ");
 
         if (!scanner.hasNextLine()) {
             return;
@@ -167,7 +171,9 @@ public class Admin {
 
         int amount = readAmount(scanner, "Enter amount to transfer: ");
 
-        sender.transferBalance(amount, recipient);
+        if (sender.transferBalance(amount, recipient)) {
+            System.out.println("\n" + senderName + " transferred £" + amount + " to " + recipientName);
+        }
     }
 
     public static void addResources(Scanner scanner) {
@@ -182,7 +188,9 @@ public class Admin {
         int quantity = readAmount(scanner, "Enter the amount you want to add: ");
 
         System.out.println();
-        SocketHandler.marketplace.addToInventory(itemName, quantity);
+        if (SocketHandler.marketplace.addToInventory(itemName, quantity)) {
+            System.out.println("\n" + " " + quantity + " items of " + itemName + " are added!");
+        }
     }
 
     public static void subtractResources(Scanner scanner) {
@@ -197,7 +205,10 @@ public class Admin {
         int quantity = readAmount(scanner, "Enter the amount you want to subtract: ");
 
         System.out.println();
-        SocketHandler.marketplace.removeFromInventory(itemName, quantity);
+
+        if (SocketHandler.marketplace.removeFromInventory(itemName, quantity)) {
+            System.out.println("\n" + quantity + itemName + " are removed!");
+        }
     }
 
     //receive an integer amount from the user
