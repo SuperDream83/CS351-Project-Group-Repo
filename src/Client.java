@@ -66,7 +66,7 @@ public class Client {
                             String sender = data[1].trim();
                             String amount = data[2].trim();
 
-                            System.out.print("\n\nYou have received: " + amount + " from " + sender + "\n" + ">>>");
+                            JOptionPane.showMessageDialog(null, "You have received: " + amount + " from " + sender);
 
                             //infoBox("You have received: " + amount + " from " + sender, "Balance Update");
 
