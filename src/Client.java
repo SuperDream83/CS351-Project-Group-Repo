@@ -68,8 +68,6 @@ public class Client {
 
                             JOptionPane.showMessageDialog(null, "You have received: " + amount + " from " + sender);
 
-                            //infoBox("You have received: " + amount + " from " + sender, "Balance Update");
-
 
                             // Conditional for Account Login
                         } else if (msgFromServer.contains("SERVER_DISCONNECT")) {
@@ -208,10 +206,6 @@ public class Client {
         listenForMsg.start();
         runClient.start();
 
-    }
-
-    public static void infoBox(String infoMessage, String titleBar) {
-        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
     }
 
 
