@@ -36,7 +36,12 @@ public class SocketHandler implements Runnable {
                     String username = data[1].trim();
                     String password = data[2].trim();
 
-                    userAccount = CsvUtils.getAccount(username, password);
+                    for (Account account : users) {
+                        if (account.getUserName().equals(username) &&
+                                account.getPassword().equals(password)) {
+                            userAccount = account;
+                        }
+                    }
 
                     // validation to ensure only 1 account is logged in on 1 client at a time
                     for (Account account : onlineUsersMap.keySet()) {
@@ -48,7 +53,6 @@ public class SocketHandler implements Runnable {
 
                     if (userAccount != null) {
                         out.println("SUCCESSFUL_LOGON" + "|" + username + "|" + password);
-                        InventoryUtils.readInventoryForAccount(userAccount);
                         onlineUsersMap.put(userAccount, socket);
                         out.flush();
                     } else {
@@ -69,6 +73,7 @@ public class SocketHandler implements Runnable {
                         userAccount = new Account(username, password, 1000);
 
                         CsvUtils.saveToCSV(userAccount);
+                        users.add(userAccount);
                         onlineUsersMap.put(userAccount, socket);
                         out.println("ACCOUNT_CREATED" + "|" + username + "|" + password);
                         out.flush();
@@ -254,10 +259,8 @@ public class SocketHandler implements Runnable {
 
     }
 
-
     public static Map<Account, Socket> getOnlineUsersMap() {
         return onlineUsersMap;
     }
-
 
 }

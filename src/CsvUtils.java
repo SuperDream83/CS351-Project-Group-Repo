@@ -152,7 +152,6 @@ public class CsvUtils {
         }
     }
 
-
     // Returns a list of all users on the system
     public static ArrayList<Account> getAccounts() {
         ArrayList<Account> accounts = new ArrayList<>();
@@ -163,7 +162,11 @@ public class CsvUtils {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 3) {
-                    accounts.add(new Account(parts[0], parts[1], Integer.parseInt(parts[2])));
+                    Account account = new Account(parts[0], parts[1], Integer.parseInt(parts[2]));
+
+                    InventoryUtils.readInventoryForAccount(account);
+
+                    accounts.add(account);
                 }
             }
         } catch (IOException e) {

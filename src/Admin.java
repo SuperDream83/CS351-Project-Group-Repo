@@ -53,14 +53,15 @@ public class Admin {
     }
 
     private static void serverShutdown() {
+        for (Account account : SocketHandler.users) {
+            // Persist account balance
+            CsvUtils.updateUserBalance(account);
+            //Persist user inventory
+            InventoryUtils.updateInventoryInCSV(account);
+        }
 
         if (!SocketHandler.getOnlineUsersMap().keySet().isEmpty()) {
-
             for (Account account : SocketHandler.getOnlineUsersMap().keySet()) {
-                // Persist account balance
-                CsvUtils.updateUserBalance(account);
-                //Persist user inventory
-                InventoryUtils.updateInventoryInCSV(account);
                 Socket tempSocket = SocketHandler.getOnlineUsersMap().get(account);
 
                 // Creates a temp PW that will write to recipient client
@@ -71,10 +72,9 @@ public class Admin {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
             }
         }
+
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -227,7 +227,7 @@ public class Admin {
         System.out.println();
 
         if (SocketHandler.marketplace.removeFromInventory(itemName, quantity)) {
-            System.out.println("\n" + quantity + itemName + " are removed!");
+            System.out.println("\n" + quantity + " items of " + itemName + " are removed!");
         }
     }
 
