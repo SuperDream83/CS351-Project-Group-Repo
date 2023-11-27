@@ -1,8 +1,6 @@
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.junit.Assert.assertFalse;
 

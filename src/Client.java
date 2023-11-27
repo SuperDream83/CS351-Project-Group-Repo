@@ -68,7 +68,6 @@ public class Client {
 
                             JOptionPane.showMessageDialog(null, "You have received: " + amount + " from " + sender);
 
-
                             // Conditional for Account Login
                         } else if (msgFromServer.contains("SERVER_DISCONNECT")) {
                             JOptionPane.showMessageDialog(null, "Warning: Server is shutting down...");
@@ -79,7 +78,6 @@ public class Client {
                             }
 
                             System.exit(0);
-
                         } else if (msgFromServer.contains("SUCCESSFUL_LOGON")) {
                             // Balance is 0 on client side as actual balance is kept on online user list on server
 
@@ -93,7 +91,6 @@ public class Client {
                                 menu.setAccount(new Account(username, password, 0));
                                 System.out.println("Log in Successful! Welcome " + username + "!");
                             });
-
                         } else if (msgFromServer.equals("LOGON_FAILED")) {
                             taskQueue.add(() -> {
                                 System.out.println("Login Unsuccessful - Please try again!");
@@ -126,7 +123,6 @@ public class Client {
                                     System.out.println(line);
                                 }
                             });
-
                         } else if (msgFromServer.contains("VIEW_USER_ACCOUNT")) {
                             String finalMsgFromServer2 = msgFromServer;
                             taskQueue.add(() -> {
@@ -139,8 +135,6 @@ public class Client {
                                     System.out.println(line);
                                 }
                             });
-
-
                         } else if (msgFromServer.contains("SEND_MONEY_TO_USER")) {
                             String finalMsgFromServer5 = msgFromServer;
                             taskQueue.add(() -> {
@@ -150,7 +144,6 @@ public class Client {
 
                                 System.out.println(msg);
                             });
-
                         } else if (msgFromServer.contains("VIEW_MARKETPLACE")) {
                             String finalMsgFromServer6 = msgFromServer;
                             taskQueue.add(() -> {
@@ -174,7 +167,6 @@ public class Client {
 
                                 System.out.println(buyMsg);
                             });
-
                         } else if (msgFromServer.contains("SELL_ITEM")) {
                             String finalMsgFromServer8 = msgFromServer;
                             taskQueue.add(() -> {
@@ -185,9 +177,7 @@ public class Client {
 
                                 System.out.println(buyMsg);
                             });
-
                         }
-
                     } catch (IOException e) {
                         e.printStackTrace();
                         break;

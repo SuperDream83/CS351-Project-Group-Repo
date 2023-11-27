@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -11,9 +12,13 @@ public class SocketHandler implements Runnable {
     Socket socket;
     Account userAccount;
 
+    // Adjust the paths if necessary
+    private static File usersFilepath = new File("Resources/accounts.csv");
+    private static File userInventoryFile = new File("Resources/userInventory.csv");
+
     private static Map<Account, Socket> onlineUsersMap = new HashMap<>(); // <Account, client Socket> HashMap
 
-    public static ArrayList<Account> users = CsvUtils.getAccounts();
+    public static ArrayList<Account> users = CsvUtils.getAccounts(usersFilepath);
 
     public static Marketplace marketplace = new Marketplace();
 
@@ -72,7 +77,7 @@ public class SocketHandler implements Runnable {
                     } else {
                         userAccount = new Account(username, password, 1000);
 
-                        CsvUtils.saveToCSV(userAccount);
+                        CsvUtils.saveAccountToCSV(userAccount, usersFilepath);
                         users.add(userAccount);
                         onlineUsersMap.put(userAccount, socket);
                         out.println("ACCOUNT_CREATED" + "|" + username + "|" + password);
@@ -244,23 +249,27 @@ public class SocketHandler implements Runnable {
                 } else if (msg.contains("LOG_OFF")) {
                     String[] data = msg.split("\\|");
                     for (Account account : onlineUsersMap.keySet()) {
-                        if (account.getUserName().equals(data[1])) {
-                            InventoryUtils.updateInventoryInCSV(userAccount);
-                            CsvUtils.updateUserBalance(userAccount);
-                            onlineUsersMap.remove(account);
-                        }
+                        if (account.getUserName().equals(data[1]))
+                            handleClientDisconnect(account);
                     }
                 }
-
             }
         } catch (IOException e) {
+            System.out.println("Socket timeout occurred for user: " + userAccount.getUserName());
+            handleClientDisconnect(userAccount);
             e.printStackTrace();
         }
-
     }
 
     public static Map<Account, Socket> getOnlineUsersMap() {
         return onlineUsersMap;
     }
 
+    public static void handleClientDisconnect(Account userAccount) {
+        if (userAccount != null) {
+            InventoryUtils.updateInventoryInCSV(userAccount, userInventoryFile);
+            CsvUtils.updateUserBalance(userAccount);
+            onlineUsersMap.remove(userAccount);
+        }
+    }
 }

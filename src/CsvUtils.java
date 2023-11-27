@@ -12,13 +12,13 @@ import java.util.Scanner;
 
 public class CsvUtils {
 
-    private static String tempAccountsFilePath = "Resources/tempAccounts.csv";
-    static String accountsFilename = "Resources/accounts.csv";
-    static String marketFilename = "Resources/market.csv";
+    // Adjust the paths if necessary
+    static String accountsFilepath   = "Resources/accounts.csv";
+    static String userInventoryFilepath = "Resources/userInventory.csv";
 
     public static Account getAccount(String username, String password) {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilename))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilepath))) {
             String line;
             reader.readLine(); // Skip header line
             while ((line = reader.readLine()) != null) {
@@ -41,7 +41,7 @@ public class CsvUtils {
 
     public static boolean checkAccountExists(String username) {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilename))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilepath))) {
             String line;
             reader.readLine(); // Skip header line
             while ((line = reader.readLine()) != null) {
@@ -61,9 +61,9 @@ public class CsvUtils {
         return false; // Account not found or error occurred
     }
 
-    public static List<MarketItem> loadMarketItems(List<MarketItem> inventory) {
+    public static List<MarketItem> loadMarketItems(List<MarketItem> inventory, File marketFile) {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(marketFilename))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(marketFile))) {
             String line;
             reader.readLine(); // Skip header line
             while ((line = reader.readLine()) != null) {
@@ -86,8 +86,8 @@ public class CsvUtils {
         return inventory;
     }
 
-    public static void saveToCSV(Account accountToSave) {
-        File csvOutputFile = new File(accountsFilename);
+    public static void saveAccountToCSV(Account accountToSave, File accountsFile) {
+        File csvOutputFile = accountsFile;
         try (PrintWriter pw = new PrintWriter(new FileWriter(csvOutputFile, true))) {
             String processedUsername = escapeSpecialCharacters(accountToSave.getUserName());
             String processedPass = escapeSpecialCharacters(accountToSave.getPassword());
@@ -108,11 +108,11 @@ public class CsvUtils {
     }
 
     public static void updateUserBalance(Account account) {
-        File oldFile = new File(accountsFilename); // assuming accountsFilename is a static variable
-        File updatedFile = new File(tempAccountsFilePath);
+        File oldFile = new File(accountsFilepath); // assuming accountsFilename is a static variable
+        File updatedFile = new File("Resources/tempAccounts.csv");
 
         try (
-                Scanner scanner = new Scanner(new File(accountsFilename));
+                Scanner scanner = new Scanner(new File(accountsFilepath));
                 FileWriter fw = new FileWriter(updatedFile, true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter pw = new PrintWriter(bw)
@@ -144,8 +144,8 @@ public class CsvUtils {
 
         // Replace old file with updated file
         if (oldFile.delete()) {
-            if (!updatedFile.renameTo(new File(accountsFilename))) {
-                System.err.println("Could not rename updated file to " + accountsFilename);
+            if (!updatedFile.renameTo(new File(accountsFilepath))) {
+                System.err.println("Could not rename updated file to " + accountsFilepath);
             }
         } else {
             System.err.println("Could not delete old file");
@@ -153,10 +153,10 @@ public class CsvUtils {
     }
 
     // Returns a list of all users on the system
-    public static ArrayList<Account> getAccounts() {
+    public static ArrayList<Account> getAccounts(File accountsFile) {
         ArrayList<Account> accounts = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilename))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFile))) {
             String line;
             reader.readLine(); // Skip header line
             while ((line = reader.readLine()) != null) {
@@ -164,7 +164,7 @@ public class CsvUtils {
                 if (parts.length == 3) {
                     Account account = new Account(parts[0], parts[1], Integer.parseInt(parts[2]));
 
-                    InventoryUtils.readInventoryForAccount(account);
+                    InventoryUtils.readInventoryForAccount(account, new File(userInventoryFilepath));
 
                     accounts.add(account);
                 }
@@ -179,8 +179,8 @@ public class CsvUtils {
         return accounts;
     }
 
-    public static void saveMarketItems(List<MarketItem> inventory) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(marketFilename))) {
+    public static void saveMarketItems(List<MarketItem> inventory, File marketFile) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(marketFile))) {
             writer.write("item,quantity,buyPrice,sellPrice\n"); // Writing the header
 
             for (MarketItem item : inventory) {
@@ -191,5 +191,4 @@ public class CsvUtils {
             e.printStackTrace();
         }
     }
-
 }
