@@ -20,7 +20,7 @@ public class Client {
 
     Client() {
         try {
-            this.socket = new Socket("127.0.0.1", 11000);
+            this.socket = new Socket("127.0.0.1", 11001);
             this.printWriter = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.menu = new Menu(in, printWriter);

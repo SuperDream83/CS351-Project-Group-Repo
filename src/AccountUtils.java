@@ -101,8 +101,25 @@ public class AccountUtils {
         System.out.println("----Send money to user----");
         System.out.print("Enter user you wish to send money too: ");
         String recipient = scanner.nextLine().trim();
-        System.out.print("Enter amount you wish to send: ");
-        String amount = scanner.nextLine().trim();
+
+      //  scanner.nextLine();
+
+        int amount;
+
+        do {
+            System.out.print("Enter amount you wish to send: ");
+            while (!scanner.hasNextInt()) {
+                System.out.print("Please enter an integer value: ");
+                scanner.next(); // Read and discard the non-integer input
+            }
+            amount = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline left-over
+
+            if (amount <= 0) {
+                System.out.print("Please enter a positive integer value: ");
+            }
+
+        } while (amount <= 0);
 
         printWriter.println("SEND_MONEY_TO_USER" + "|" + recipient + "|" + amount + "|" + account.getUserName());
 
