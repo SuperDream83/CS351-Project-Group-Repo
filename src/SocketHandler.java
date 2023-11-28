@@ -267,7 +267,7 @@ public class SocketHandler implements Runnable {
     public static void handleClientDisconnect(Account userAccount) {
         if (userAccount != null) {
             InventoryUtils.updateInventoryInCSV(userAccount, userInventoryFile);
-            CsvUtils.updateUserBalance(userAccount);
+            CsvUtils.updateUserBalance(userAccount, usersFilepath);
             onlineUsersMap.remove(userAccount);
         }
     }

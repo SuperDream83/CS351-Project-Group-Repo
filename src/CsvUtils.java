@@ -9,8 +9,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CsvUtils {
+
+    private static final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
 
     // Adjust the paths if necessary
     static String accountsFilepath   = "Resources/accounts.csv";
@@ -107,12 +110,13 @@ public class CsvUtils {
         return escapedData;
     }
 
-    public static void updateUserBalance(Account account) {
-        File oldFile = new File(accountsFilepath); // assuming accountsFilename is a static variable
-        File updatedFile = new File("Resources/tempAccounts.csv");
+    public static void updateUserBalance(Account account, File accountsFile) {
+        rwLock.writeLock().lock();
+        File oldFile = accountsFile; // assuming accountsFilename is a static variable
+        File updatedFile = new File("tempAccounts.csv");
 
         try (
-                Scanner scanner = new Scanner(new File(accountsFilepath));
+                Scanner scanner = new Scanner(accountsFile);
                 FileWriter fw = new FileWriter(updatedFile, true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter pw = new PrintWriter(bw)
@@ -144,12 +148,13 @@ public class CsvUtils {
 
         // Replace old file with updated file
         if (oldFile.delete()) {
-            if (!updatedFile.renameTo(new File(accountsFilepath))) {
-                System.err.println("Could not rename updated file to " + accountsFilepath);
+            if (!updatedFile.renameTo(accountsFile)) {
+                System.err.println("Could not rename updated file to " + accountsFile);
             }
         } else {
             System.err.println("Could not delete old file");
         }
+        rwLock.writeLock().unlock();
     }
 
     // Returns a list of all users on the system
@@ -179,6 +184,7 @@ public class CsvUtils {
         return accounts;
     }
 
+    // Saves all changes made to the Marketplace during server uptime to the market.csv
     public static void saveMarketItems(List<MarketItem> inventory, File marketFile) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(marketFile))) {
             writer.write("item,quantity,buyPrice,sellPrice\n"); // Writing the header

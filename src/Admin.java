@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class Admin {
 
     // Adjust the paths if necessary
+    private static File accountsFile = new File("Resources/accounts.csv");
     private static File marketFile = new File("Resources/market.csv");
     private static File userInventoryFile = new File("Resources/userInventory.csv");
 
@@ -60,7 +61,7 @@ public class Admin {
     private static void serverShutdown() {
         for (Account account : SocketHandler.users) {
             // Persist account balance
-            CsvUtils.updateUserBalance(account);
+            CsvUtils.updateUserBalance(account, accountsFile);
             //Persist user inventory
             InventoryUtils.updateInventoryInCSV(account, userInventoryFile);
         }
