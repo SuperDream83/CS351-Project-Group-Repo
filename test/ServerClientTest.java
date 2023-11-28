@@ -10,7 +10,6 @@ public class ServerClientTest {
 
     boolean clientError;
 
-
     @Test
     public void executionTest() throws InterruptedException {
         Thread t1 = new Thread(() -> {
