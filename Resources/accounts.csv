@@ -2,7 +2,7 @@ username,password,balance
 Warren,pass123,1287
 Adam,pass123,5610
 Kieran,pass123,184
-Aidan,pass123,2970
+Aidan,pass123,2950
 Keti,pass123,9251
 Greg,pass123,4700
 Eve,pass123,1598
@@ -19,3 +19,4 @@ John,pass123,1000
 Mouse,test,750
 table,test,1000
 pen,pass123,870
+Zero,pass123,1000

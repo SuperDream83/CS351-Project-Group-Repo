@@ -72,9 +72,22 @@ public class MarketUtils {
         System.out.print("Enter the name of the item you want to buy: ");
         String itemName = scanner.nextLine();
 
-        System.out.print("Enter the quantity you want to buy: ");
-        int quantity = scanner.nextInt();
-        scanner.nextLine(); // Consume newline left-over
+        int quantity;
+
+        do {
+            System.out.print("Enter quantity you wish to send: ");
+            while (!scanner.hasNextInt()) {
+                System.out.print("Please enter an integer value: ");
+                scanner.next(); // Read and discard the non-integer input
+            }
+            quantity = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline left-over
+
+            if (quantity <= 0) {
+                System.out.print("Please enter a positive integer value: ");
+            }
+
+        } while (quantity <= 0);
 
         printWriter.println("BUY_ITEM" + "|" + itemName + "|" + quantity);
 
@@ -97,9 +110,22 @@ public class MarketUtils {
         String itemName = scanner.nextLine();
 
 
-        System.out.print("Enter the quantity you want to sell: ");
-        int quantityToSell = scanner.nextInt();
-        scanner.nextLine(); // Consume newline left-over
+        int quantityToSell;
+
+        do {
+            System.out.print("Enter quantity you wish to send: ");
+            while (!scanner.hasNextInt()) {
+                System.out.print("Please enter an integer value: ");
+                scanner.next(); // Read and discard the non-integer input
+            }
+            quantityToSell = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline left-over
+
+            if (quantityToSell <= 0) {
+                System.out.print("Please enter a positive integer value: ");
+            }
+
+        } while (quantityToSell <= 0);
 
         printWriter.println("SELL_ITEM" + "|" + itemName + "|" + quantityToSell);
 

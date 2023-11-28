@@ -10,7 +10,7 @@ public class Server implements Runnable {
     ExecutorService threadpool;
 
     public Server() throws IOException {
-        this.serverSocket = new ServerSocket(11000);
+        this.serverSocket = new ServerSocket(11001);
         threadpool = Executors.newFixedThreadPool(20);
     }
 
@@ -20,7 +20,6 @@ public class Server implements Runnable {
         try {
             while (true) {
                 Socket client = serverSocket.accept();
-                //System.out.println("Client connected");
                 // Create socketHander
                 // Pass to threadpool
                 threadpool.submit(new SocketHandler(client));

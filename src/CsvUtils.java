@@ -19,29 +19,6 @@ public class CsvUtils {
     static String accountsFilepath   = "Resources/accounts.csv";
     static String userInventoryFilepath = "Resources/userInventory.csv";
 
-    public static Account getAccount(String username, String password) {
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilepath))) {
-            String line;
-            reader.readLine(); // Skip header line
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    if (parts[0].equals(username) && parts[1].equals(password)) {
-                        Account account = new Account(parts[0], parts[1], Integer.parseInt(parts[2]));
-                        return account;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            System.out.println("Error parsing balance");
-            e.printStackTrace();
-        }
-        return null; // Account not found or error occurred
-    }
-
     public static boolean checkAccountExists(String username) {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(accountsFilepath))) {
