@@ -88,4 +88,43 @@ public class CsvUtilsTest {
         Assertions.assertEquals(CsvUtils.getAccounts(testAccountsFile).get(3).getUserName(), "user4");
 
     }
+
+    @Test
+    public void testMultipleAccountSaves() throws InterruptedException {
+        List<Account> accounts = CsvUtils.getAccounts(testAccountsFile);
+
+        Account user1 = accounts.get(0);
+        user1.incrementBalance(200);
+        Account user2 = accounts.get(1);
+        user2.incrementBalance(777);
+        Account user3 = accounts.get(2);
+        user3.incrementBalance(420);
+        Thread t1 = new Thread(() -> {
+            CsvUtils.updateUserBalance(user1, testAccountsFile);
+        });
+
+        Thread t2 = new Thread(() -> {
+            CsvUtils.updateUserBalance(user2, testAccountsFile);
+        });
+
+        Thread t3 = new Thread(() -> {
+            CsvUtils.updateUserBalance(user3, testAccountsFile);
+        });
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        t1.join();
+        t2.join();
+        t3.join();
+
+        List<Account> updatedAccounts = CsvUtils.getAccounts(testAccountsFile);
+        Account updatedUser1 = updatedAccounts.get(0);
+        Account updatedUser2 = updatedAccounts.get(1);
+        Account updatedUser3 = updatedAccounts.get(2);
+        Assertions.assertEquals(1200, updatedUser1.getBalance());
+        Assertions.assertEquals(1777, updatedUser2.getBalance());
+        Assertions.assertEquals(1420, updatedUser3.getBalance());
+    }
 }
