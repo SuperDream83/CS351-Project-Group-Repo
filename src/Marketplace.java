@@ -1,8 +1,11 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Marketplace {
+
+    private File marketFilepath = new File("Resources/market.csv");
 
     private List<MarketItem> inventory;
 
@@ -11,7 +14,7 @@ public class Marketplace {
 
     public Marketplace() {
         inventory = new ArrayList<>();
-        CsvUtils.loadMarketItems(inventory);
+        CsvUtils.loadMarketItems(inventory, marketFilepath);
     }
 
     public List<MarketItem> getInventory() {

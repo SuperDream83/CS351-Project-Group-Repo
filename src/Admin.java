@@ -1,9 +1,14 @@
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Admin {
+
+    // Adjust the paths if necessary
+    private static File marketFile = new File("Resources/market.csv");
+    private static File userInventoryFile = new File("Resources/userInventory.csv");
 
     public static void run() {
         Scanner scanner = new Scanner(System.in);
@@ -57,7 +62,7 @@ public class Admin {
             // Persist account balance
             CsvUtils.updateUserBalance(account);
             //Persist user inventory
-            InventoryUtils.updateInventoryInCSV(account);
+            InventoryUtils.updateInventoryInCSV(account, userInventoryFile);
         }
 
         if (!SocketHandler.getOnlineUsersMap().keySet().isEmpty()) {
@@ -82,7 +87,7 @@ public class Admin {
         }
 
         // persist marketplace
-        CsvUtils.saveMarketItems(SocketHandler.marketplace.getInventory());
+        CsvUtils.saveMarketItems(SocketHandler.marketplace.getInventory(), marketFile);
         System.out.println("Server shutting down...");
         System.exit(0);
 
