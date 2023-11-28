@@ -90,8 +90,7 @@ public class SocketHandler implements Runnable {
                     StringBuilder stringToSend = new StringBuilder();
                     for (Account account : onlineUsersMap.keySet()) {
                         stringToSend.append("Username: ").append(account.getUserName()).append("-")
-                                .append("  Balance: ").append(account.getBalance()).append("-")
-                                .append("    IP: ").append(onlineUsersMap.get(account).getRemoteSocketAddress().toString()).append("-");
+                                .append("  Balance: ").append(account.getBalance()).append("-");
                     }
                     out.println("VIEW_ONLINE_USERS" + "|" + stringToSend);
                     out.flush();
