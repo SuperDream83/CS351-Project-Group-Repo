@@ -17,6 +17,11 @@ public class Marketplace {
         CsvUtils.loadMarketItems(inventory, marketFilepath);
     }
 
+    public Marketplace(File filepath) {
+        inventory = new ArrayList<>();
+        CsvUtils.loadMarketItems(inventory, filepath);
+    }
+
     public List<MarketItem> getInventory() {
         return inventory;
     }

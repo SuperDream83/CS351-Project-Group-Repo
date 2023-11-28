@@ -13,8 +13,8 @@ public class SocketHandler implements Runnable {
     Account userAccount;
 
     // Adjust the paths if necessary
-    private static File usersFilepath = new File("Resources/accounts.csv");
-    private static File userInventoryFile = new File("Resources/userInventory.csv");
+    private static final File usersFilepath = new File("Resources/accounts.csv");
+    private static final File userInventoryFile = new File("Resources/userInventory.csv");
 
     private static Map<Account, Socket> onlineUsersMap = new HashMap<>(); // <Account, client Socket> HashMap
 

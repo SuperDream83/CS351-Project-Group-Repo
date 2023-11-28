@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class InventoryUtilsTest {
 
-    private static File testUsersInventoryFile = new File("test/Resources/test_usersInventory.csv");
-    private static File testAccountsFile = new File("test/Resources/test_accounts.csv");
+    private static final File testUsersInventoryFile = new File("test/Resources/test_usersInventory.csv");
+    private static final File testAccountsFile = new File("test/Resources/test_accounts.csv");
 
 
     @BeforeEach

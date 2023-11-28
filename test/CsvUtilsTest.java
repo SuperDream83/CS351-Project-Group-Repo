@@ -1,16 +1,20 @@
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class CsvUtilsTest {
-    private static File testAccountsFile = new File("test/Resources/test_accounts.csv");
-    private static File testMarketFile = new File("test/Resources/test_market.csv");
+    private static final File testAccountsFile = new File("test/Resources/test_accounts.csv");
+    private static final File testMarketFile = new File("test/Resources/test_market.csv");
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -20,6 +24,14 @@ public class CsvUtilsTest {
             writer.write("user1,pass123,1000\n");
             writer.write("user2,pass123,1000\n");
             writer.write("user3,pass123,1000\n");
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(testMarketFile))) {
+            writer.write("item,quantity,buyPrice,sellPrice\n"); // headers
+            writer.write("Wood,50,10,8\n");
+            writer.write("Stone,100,10,8\n");
+            writer.write("Iron,30,30,24\n");
+            writer.write("Gold,5,100,80\n");
+            writer.write("Silver,20,50,40\n");
         }
     }
 
@@ -37,13 +49,22 @@ public class CsvUtilsTest {
         assertEquals(inventory.get(4).getItem(), "Silver");
     }
 
-//    @Test
-//    public void testMarketFileUpdates() {
-//        List<MarketItem> inventory = new ArrayList<>();
-//        CsvUtils.loadMarketItems(inventory, testMarketFile);
-//
-//        Account acc1 = new Account("user1", "pass123", 1000);
-//    }
+    @Test
+    public void testMarketFileUpdates() {
+        Marketplace marketplace = new Marketplace(testMarketFile);
+        Assertions.assertEquals(marketplace.findItem("Gold").getQuantity(), 5);
+
+        Account user = CsvUtils.getAccounts(testAccountsFile).get(0);
+        Map<String, Integer> userInventory = user.getInventory();
+
+        MarketItem item = new MarketItem("Gold", 15, 100, 80);
+        marketplace.addToInventory(item.getItem(), item.getQuantity());
+
+        CsvUtils.saveMarketItems(marketplace.getInventory(), testMarketFile);
+
+        Marketplace updatedMarket = new Marketplace(testMarketFile);
+        Assertions.assertEquals(updatedMarket.findItem("Gold").getQuantity(), 20);
+    }
 
     @Test
     public void testAccountsFileLoad() {
@@ -51,20 +72,20 @@ public class CsvUtilsTest {
 
         users = CsvUtils.getAccounts(testAccountsFile);
 
-        assertEquals(users.size(), 3);
-        assertEquals(users.get(0).getUserName(), "user1");
-        assertEquals(users.get(1).getUserName(), "user2");
-        assertEquals(users.get(2).getUserName(), "user3");
+        Assertions.assertEquals(users.size(), 3);
+        Assertions.assertEquals(users.get(0).getUserName(), "user1");
+        Assertions.assertEquals(users.get(1).getUserName(), "user2");
+        Assertions.assertEquals(users.get(2).getUserName(), "user3");
     }
 
     @Test
     public void testUserRegisteredToCSV() {
         Account accountToAdd = new Account("user4", "pass123", 1000);
 
-        assertEquals(CsvUtils.getAccounts(testAccountsFile).size(), 3);
+        Assertions.assertEquals(CsvUtils.getAccounts(testAccountsFile).size(), 3);
         CsvUtils.saveAccountToCSV(accountToAdd, testAccountsFile);
-        assertEquals(CsvUtils.getAccounts(testAccountsFile).size(), 4);
-        assertEquals(CsvUtils.getAccounts(testAccountsFile).get(3).getUserName(), "user4");
+        Assertions.assertEquals(CsvUtils.getAccounts(testAccountsFile).size(), 4);
+        Assertions.assertEquals(CsvUtils.getAccounts(testAccountsFile).get(3).getUserName(), "user4");
 
     }
 }
